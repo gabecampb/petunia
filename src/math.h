@@ -24,14 +24,24 @@ class Vec3 {
 	Vec3 operator +(Vec3 v) { return Vec3(x + v.x, y + v.y, z + v.z); }
 	Vec3 operator -(Vec3 v) { return Vec3(x - v.x, y - v.y, z - v.z); }
 	Vec3 operator *(Vec3 v) { return Vec3(x * v.x, y * v.y, z * v.z); }
-	Vec3 operator /(Vec3 v) { return Vec3(x / v.x, y / v.y, z / v.z); }
+	Vec3 operator /(Vec3 v) {
+		if(v.x == 0 || v.y == 0 || v.z == 0)
+			return Vec3(0,0,0);
+		return Vec3(x / v.x, y / v.y, z / v.z);
+	}
 	Vec3 operator *(f32 f) { return Vec3(x * f, y * f, z * f); }
-	Vec3 operator /(f32 f) { return Vec3(x / f, y / f, z / f); }
+	Vec3 operator /(f32 f) {
+		if(f == 0)
+			return Vec3(0,0,0);
+		return Vec3(x / f, y / f, z / f);
+	}
 
 	Vec3 operator +=(Vec3 v) { *this = *this + v; return *this; }
 	Vec3 operator -=(Vec3 v) { *this = *this - v; return *this; }
 	Vec3 operator *=(Vec3 v) { *this = *this * v; return *this; }
 	Vec3 operator /=(Vec3 v) { *this = *this / v; return *this; }
+	Vec3 operator *=(f32 f)  { *this = *this * f; return *this; }
+	Vec3 operator /=(f32 f)  { *this = *this / f; return *this; }
 
 	f32 mag() {
 		return sqrt(x*x + y*y + z*z);
@@ -67,12 +77,31 @@ class Vec4 {
 	Vec4 operator +(Vec4 v) { return Vec4(x + v.x, y + v.y, z + v.z, w + v.w); }
 	Vec4 operator -(Vec4 v) { return Vec4(x - v.x, y - v.y, z - v.z, w - v.w); }
 	Vec4 operator *(Vec4 v) { return Vec4(x * v.x, y * v.y, z * v.z, w * v.w); }
-	Vec4 operator /(Vec4 v) { return Vec4(x / v.x, y / v.y, z / v.z, w / v.w); }
+	Vec4 operator /(Vec4 v) {
+		if(v.x == 0 || v.y == 0 || v.z == 0 || v.w == 0)
+			return Vec4(0,0,0,0);
+		return Vec4(x / v.x, y / v.y, z / v.z, w / v.w);
+	}
+	Vec4 operator *(f32 f)  { return Vec4(x * f, y * f, z * f, w * f); }
+	Vec4 operator /(f32 f)  {
+		if(f == 0)
+			return Vec4(0,0,0,0);
+		return Vec4(x / f, y / f, z / f, w / f);
+	}
 
 	Vec4 operator +=(Vec4 v) { *this = *this + v; return *this; }
 	Vec4 operator -=(Vec4 v) { *this = *this - v; return *this; }
 	Vec4 operator *=(Vec4 v) { *this = *this * v; return *this; }
 	Vec4 operator /=(Vec4 v) { *this = *this / v; return *this; }
+	Vec4 operator *=(f32 f)  { *this = *this * f; return *this; }
+	Vec4 operator /=(f32 f)  { *this = *this / f; return *this; }
+
+	f32 mag() {
+		return sqrt(x*x + y*y + z*z + w*w);
+	}
+	Vec4 norm() {
+		return *this / mag();
+	}
 };
 
 class Mat4 {
@@ -102,10 +131,16 @@ class Mat4 {
 	Mat4 operator *=(Mat4 m) { *this = *this * m; return *this; }
 };
 
+f32 torad(f32 a);
+f32 todeg(f32 a);
 Mat4 look_at(Vec3 eye, Vec3 center, Vec3 up);
 Mat4 perspective(f32 fovy, f32 aspect, f32 near, f32 far);
 Mat4 translate(Vec3 t);
 Mat4 scale(Vec3 s);
+Mat4 rotate(Vec3 axis, f32 angle);
+Vec4 euler_to_quat(Vec3 angles);
+Vec4 quat_axis_rotation(Vec3 axis, f32 angle);
+Vec3 quat_to_euler(Vec4 q);
 Mat4 quat_to_mat4(Vec4 q);
 
 #endif
