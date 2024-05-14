@@ -25,11 +25,11 @@ typedef float f32;
 typedef float f64;
 
 #include "math.h"
-#include "camera.h"
 #include "model.h"
 #include "node.h"
 #include "scene.h"
-#include "render.h"
 #include "window.h"
+#include "camera.h"
+#include "render.h"
 
 #endif

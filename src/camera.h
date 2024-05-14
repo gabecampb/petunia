@@ -3,10 +3,8 @@
 
 #include "common.h"
 
-class Camera {
+class Camera : public Node {
 	public:
-	Vec3 pos;
-	Vec4 rot;
 	f32 fovy, near, far;
 
 	Camera(f32 fov, f32 n, f32 f);

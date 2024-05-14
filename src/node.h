@@ -15,7 +15,7 @@ class Node {
 		pos		= Vec3(0,0,0);
 		scale	= Vec3(1,1,1);
 		rot		= Vec4(0,0,0,1);
-		model = 0;
+		model	= 0;
 	}
 };
 
