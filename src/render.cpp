@@ -2,13 +2,13 @@
 
 GLuint program_id;
 
-void render(Scene* scene) {
+void render(Camera &cam, Scene* scene) {
 	if(!scene->root)
 		return;
-	render_node(scene->root);
+	render_node(cam, scene->root);
 }
 
-void render_node(Node* node) {
+void render_node(Camera &cam, Node* node) {
 	if(!node)
 		return;
 
@@ -24,8 +24,8 @@ void render_node(Node* node) {
 		glBindBuffer(GL_ARRAY_BUFFER, m->vbo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->ibo);
 
-		Mat4 persp = perspective(60./(180./M_PI), get_aspect(), 0.01, 50.);
-		Mat4 view = look_at(Vec3(0,0,5), Vec3(0,0,-1), Vec3(0,1,0));
+		Mat4 persp = cam.get_persp(get_aspect());
+		Mat4 view = cam.get_view();
 		f32 color[] = { 1, 1, 1, 1 };
 
 		Mat4 model_mat = translate(node->pos) * (quat_to_mat4(node->rot)
@@ -48,7 +48,7 @@ void render_node(Node* node) {
 
 	// call render_node for every child
 	for(u32 i = 0; i < node->children.size(); i++)
-		render_node(node->children[i]);
+		render_node(cam, node->children[i]);
 }
 
 GLuint create_program(const char* vtx_shader_src, const char* pxl_shader_src) {

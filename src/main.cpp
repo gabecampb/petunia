@@ -14,8 +14,10 @@ int main() {
 	n->scale = Vec3(.25,.25,.25);
 	n->rot = Vec4(-.001, -.469, .156, -.869);
 
+	Camera cam(torad(60.), .01, 50);
+
 	while(next_frame())
-		render(&default_scene);
+		render(cam, &default_scene);
 
 	terminate_gfx();
 	return 0;
