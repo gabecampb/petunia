@@ -9,6 +9,7 @@ class Player : public Node {
 	f32 health;
 
 	Player(std::string player_name);
+	~Player();
 };
 
 void set_player(Player*);
