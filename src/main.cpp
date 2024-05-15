@@ -14,6 +14,10 @@ int main() {
 	n->scale = Vec3(.25,.25,.25);
 	n->rot = Vec4(-.001, -.469, .156, -.869);
 
+	Player* p = new Player("example_player");
+	default_scene.root->children.push_back(p);
+	set_player(p);
+
 	Camera cam(torad(60.), .01, 50);
 
 	while(next_frame())

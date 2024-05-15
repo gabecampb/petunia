@@ -30,6 +30,7 @@ typedef float f64;
 #include "scene.h"
 #include "window.h"
 #include "camera.h"
+#include "player.h"
 #include "render.h"
 
 #endif
