@@ -3,7 +3,11 @@
 
 #include "common.h"
 
-
+enum NodeType {
+	TYPE_NODE,
+	TYPE_CAMERA,
+	TYPE_PLAYER
+};
 
 class Node {
 	protected:
@@ -12,6 +16,7 @@ class Node {
 	Mat4 local, global;
 	std::vector<Node*> children;
 	Node* parent;
+	NodeType type;
 
 	void update_transform();
 
@@ -26,10 +31,12 @@ class Node {
 	Mat4 get_global();
 	Node* get_child(u32 idx);
 	u32 get_child_count();
+	NodeType get_type();
 	void set_pos(Vec3 p);
 	void set_scale(Vec3 s);
 	void set_rot(Vec4 q);
 	void add_child(Node* node);
+	Node* remove_child(u32 idx);
 };
 
 

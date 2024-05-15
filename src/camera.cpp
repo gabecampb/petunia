@@ -1,6 +1,7 @@
 #include "common.h"
 
 Camera::Camera(f32 fov, f32 n, f32 f) {
+	type = NodeType::TYPE_CAMERA;
 	fovy = fov;
 	near = n;
 	far = f;

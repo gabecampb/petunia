@@ -1,6 +1,7 @@
 #include "common.h"
 
 Node::Node() {
+	type	= NodeType::TYPE_NODE;
 	pos		= Vec3(0,0,0);
 	size	= Vec3(1,1,1);
 	rot		= Vec4(0,0,0,1);
@@ -27,6 +28,7 @@ Mat4 Node::get_local()			{ return local; }
 Mat4 Node::get_global()			{ return global; }
 Node* Node::get_child(u32 idx)	{ return children.at(idx); }
 u32 Node::get_child_count()		{ return children.size(); }
+NodeType Node::get_type()		{ return type; }
 
 void Node::set_pos(Vec3 p) {
 	pos = p;
@@ -49,4 +51,13 @@ void Node::add_child(Node* node) {
 	children.push_back(node);
 	node->parent = this;
 	node->update_transform();
+}
+
+Node* Node::remove_child(u32 idx) {
+	if(idx >= children.size())
+		return 0;
+	Node* child = children.at(idx);
+	children.erase(children.begin() + idx);
+	child->parent = 0;
+	return child;
 }
