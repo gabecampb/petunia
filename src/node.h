@@ -3,20 +3,34 @@
 
 #include "common.h"
 
-class Node {
-	public:
-	Vec3 pos;
-	Vec3 scale;
-	Vec4 rot;
-	Model* model;
-	std::vector<Node*> children;
 
-	Node() {
-		pos		= Vec3(0,0,0);
-		scale	= Vec3(1,1,1);
-		rot		= Vec4(0,0,0,1);
-		model	= 0;
-	}
+
+class Node {
+	protected:
+	Vec3 pos, size;
+	Vec4 rot;
+	Mat4 local, global;
+	std::vector<Node*> children;
+	Node* parent;
+
+	void update_transform();
+
+	public:
+	Model* model;
+
+	Node();
+	Vec3 get_pos();
+	Vec3 get_scale();
+	Vec4 get_rot();
+	Mat4 get_local();
+	Mat4 get_global();
+	Node* get_child(u32 idx);
+	u32 get_child_count();
+	void set_pos(Vec3 p);
+	void set_scale(Vec3 s);
+	void set_rot(Vec4 q);
+	void add_child(Node* node);
 };
+
 
 #endif

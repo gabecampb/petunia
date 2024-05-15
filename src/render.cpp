@@ -28,8 +28,7 @@ void render_node(Camera &cam, Node* node) {
 		Mat4 view = cam.get_view();
 		f32 color[] = { 1, 1, 1, 1 };
 
-		Mat4 model_mat = translate(node->pos) * (quat_to_mat4(node->rot)
-			* scale(node->scale));
+		Mat4 model_mat = node->get_global();
 		glUniformMatrix4fv(model_loc, 1, GL_TRUE, (f32*)model_mat.data);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, (f32*)persp.data);
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, (f32*)view.data);
@@ -47,8 +46,8 @@ void render_node(Camera &cam, Node* node) {
 	}
 
 	// call render_node for every child
-	for(u32 i = 0; i < node->children.size(); i++)
-		render_node(cam, node->children[i]);
+	for(u32 i = 0; i < node->get_child_count(); i++)
+		render_node(cam, node->get_child(i));
 }
 
 GLuint create_program(const char* vtx_shader_src, const char* pxl_shader_src) {
