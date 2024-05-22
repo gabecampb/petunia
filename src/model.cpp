@@ -3,10 +3,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 Model::Model() {
 	model_id = vao = vbo = ibo = tbo = n_verts = 0;
 	filepath = tex_filepath = "";

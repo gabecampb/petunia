@@ -14,6 +14,14 @@
 #include <GL/glext.h>
 #include <GLFW/glfw3.h>
 
+#include "../include/imgui/imgui.h"
+#include "../include/imgui/backends/imgui_impl_glfw.h"
+#include "../include/imgui/backends/imgui_impl_opengl3.h"
+
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 typedef uint8_t u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
