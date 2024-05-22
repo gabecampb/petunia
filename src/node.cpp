@@ -1,5 +1,7 @@
 #include "common.h"
 
+std::queue<Node*> free_queue;
+
 Node::Node() {
 	type	= NodeType::TYPE_NODE;
 	pos		= Vec3(0,0,0);
@@ -56,8 +58,40 @@ void Node::add_child(Node* node) {
 Node* Node::remove_child(u32 idx) {
 	if(idx >= children.size())
 		return 0;
-	Node* child = children.at(idx);
+	Node* child = children[idx];
 	children.erase(children.begin() + idx);
 	child->parent = 0;
 	return child;
+}
+
+void Node::queue_to_free() {
+	// remove all children of this node and queue to free them.
+	while(children.size() > 0)
+		remove_child(0)->queue_to_free();
+
+	// remove this node from its parent and queue to free this node
+	if(parent != 0)
+		for(u32 i = 0; i < parent->children.size(); i++)
+			if(parent->children[i] == this) {
+				parent->remove_child(i);
+				break;
+			}
+	free_queue.push(this);
+}
+
+void Node::free_children() {
+	for(u32 i = 0; i < children.size(); i++)
+		children[i]->queue_to_free();
+}
+
+void node_cleanup() {
+	while(free_queue.size() > 0) {
+		Node* node = free_queue.front();
+		free_queue.pop();
+		switch(node->get_type()) {
+			case TYPE_NODE:		delete (Node*)node;		break;
+			case TYPE_CAMERA:	delete (Camera*)node;	break;
+			case TYPE_PLAYER:	delete (Player*)node;	break;
+		}
+	}
 }

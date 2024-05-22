@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cmath>
 #include <vector>
+#include <queue>
 
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>

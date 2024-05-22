@@ -20,8 +20,10 @@ int main() {
 
 	Camera cam(torad(60.), .01, 50);
 
-	while(next_frame())
+	while(next_frame()) {
 		render(cam, &default_scene);
+		node_cleanup();
+	}
 
 	terminate_gfx();
 	return 0;

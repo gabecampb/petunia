@@ -37,7 +37,10 @@ class Node {
 	void set_rot(Vec4 q);
 	void add_child(Node* node);
 	Node* remove_child(u32 idx);
+	void queue_to_free();
+	void free_children();
 };
 
+void node_cleanup();
 
 #endif
