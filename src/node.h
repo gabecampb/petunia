@@ -22,6 +22,7 @@ class Node {
 
 	public:
 	Model* model;
+	std::string name;
 
 	Node();
 	Vec3 get_pos();

@@ -8,6 +8,7 @@ class Scene {
 	Scene() {
 		// default scene constructor
 		root = new Node;
+		root->name = "root";
 	}
 
 	Model* load_model(u32 id, std::string fpath, std::string tex_fpath) {

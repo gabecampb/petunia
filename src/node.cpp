@@ -4,6 +4,7 @@ std::queue<Node*> free_queue;
 
 Node::Node() {
 	type	= NodeType::TYPE_NODE;
+	name	= "Node";
 	pos		= Vec3(0,0,0);
 	size	= Vec3(1,1,1);
 	rot		= Vec4(0,0,0,1);

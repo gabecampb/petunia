@@ -4,7 +4,7 @@ Player* current_player;
 
 Player::Player(std::string player_name) {
 	type = NodeType::TYPE_PLAYER;
-	name = player_name;
+	plr_name = player_name;
 	health = 100;
 }
 

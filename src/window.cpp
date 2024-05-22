@@ -62,7 +62,6 @@ u8 next_frame() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-	ImGui::ShowDemoWindow();
 
 	frame_count++;
 	return !glfwWindowShouldClose(window);

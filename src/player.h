@@ -5,7 +5,7 @@
 
 class Player : public Node {
 	public:
-	std::string name;
+	std::string plr_name;
 	f32 health;
 
 	Player(std::string player_name);
