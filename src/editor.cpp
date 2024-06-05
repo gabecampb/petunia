@@ -41,7 +41,7 @@ void transform_buttons(Node* n) {
 		v[i / 2] = torad(rot_amt * (i%2 == 0 ? +1 : -1));
 
 		if(ImGui::Button(rb[i]))
-			n->set_rot(quat_quat(n->get_rot(), euler_to_quat(v)));
+			n->set_rot(quat_quat(euler_to_quat(v), n->get_rot()));
 
 		if(i < 5) ImGui::SameLine();
 	}
