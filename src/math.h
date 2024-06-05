@@ -18,7 +18,7 @@ class Vec3 {
 		z = Z;
 	}
 	Vec3(f32 p[3]) {
-		Vec3(p[0], p[1], p[2]);
+		*this = Vec3(p[0], p[1], p[2]);
 	}
 
 	Vec3 operator +(Vec3 v) { return Vec3(x + v.x, y + v.y, z + v.z); }
@@ -71,7 +71,7 @@ class Vec4 {
 		w = W;
 	}
 	Vec4(f32 p[4]) {
-		Vec4(p[0], p[1], p[2], p[3]);
+		*this = Vec4(p[0], p[1], p[2], p[3]);
 	}
 
 	Vec4 operator +(Vec4 v) { return Vec4(x + v.x, y + v.y, z + v.z, w + v.w); }
