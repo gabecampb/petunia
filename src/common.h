@@ -39,7 +39,10 @@ typedef float f64;
 #include "scene.h"
 #include "window.h"
 #include "camera.h"
+#include "editor.h"
 #include "player.h"
 #include "render.h"
+
+extern Scene* cur_scene;
 
 #endif

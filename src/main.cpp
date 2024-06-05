@@ -1,10 +1,13 @@
 #include "common.h"
 
+Scene* cur_scene;
+
 int main() {
 	init_gfx();
 	init_render();
 
 	Scene default_scene;
+	cur_scene = &default_scene;
 	Model* m = default_scene.load_model(256, "assets/cube.obj", "assets/petunia.jpg");
 	Node* n = new Node;
 	default_scene.root->add_child(n);
@@ -21,6 +24,8 @@ int main() {
 	Camera cam(torad(60.), .01, 50);
 
 	while(next_frame()) {
+		editor_ui();
+
 		render(cam, &default_scene);
 		node_cleanup();
 	}
