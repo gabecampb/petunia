@@ -138,8 +138,9 @@ Mat4 perspective(f32 fovy, f32 aspect, f32 near, f32 far);
 Mat4 translate(Vec3 t);
 Mat4 scale(Vec3 s);
 Mat4 rotate(Vec3 axis, f32 angle);
+
+Vec4 quat_quat(Vec4 a, Vec4 b);
 Vec4 euler_to_quat(Vec3 angles);
-Vec4 quat_axis_rotation(Vec3 axis, f32 angle);
 Vec3 quat_to_euler(Vec4 q);
 Mat4 quat_to_mat4(Vec4 q);
 

@@ -96,86 +96,81 @@ Mat4 rotate(Vec3 axis, f32 angle) {
 	return mrot;
 }
 
-Vec4 euler_to_quat(Vec3 angles) {
-	f32 c1, c2, c3;
-	f32 s1, s2, s3;
+// heading		= y
+// attitude		= z
+// bank			= x
+// perform rotation about y,z then x
 
-	if(angles.x >= 0) angles.x = fmod(angles.x, 360.0);
-	else angles.x = 360 - fmod(-angles.x, 360);
-	if(angles.y >= 0) angles.y = fmod(angles.y, 360.0);
-	else angles.y = 360 - fmod(-angles.y, 360);
-	if(angles.z >= 0) angles.z = fmod(angles.z, 360.0);
-	else angles.z = 360 - fmod(-angles.z, 360);
-
-	angles.x = torad(angles.x);
-	angles.y = torad(angles.y);
-	angles.z = torad(angles.z);
-
-	c1 = cos(angles.y / 2.0);
-	c2 = cos(angles.z / 2.0);
-	c3 = cos(angles.x / 2.0);
-	s1 = sin(angles.y / 2.0);
-	s2 = sin(angles.z / 2.0);
-	s3 = sin(angles.x / 2.0);
-
-	Vec4 quat;
-	quat.w = c1*c2*c3 - s1*s2*s3;
-	quat.x = s1*s2*c3 + c1*c2*s3;
-	quat.y = s1*c2*c3 + c1*s2*s3;
-	quat.z = c1*s2*c3 - s1*c2*s3;
-
-	float n = sqrt(pow(quat.x, 2) + pow(quat.y, 2) + pow(quat.z, 2) + pow(quat.w, 2));
-	if(n)
-		quat /= n;
-
-	return quat;
-}
-
-Vec4 quat_axis_rotation(Vec3 axis, f32 angle) {
-	angle = torad(angle);
-	Vec3 v = axis * sin(angle/2.);
-	Vec4 quat(v.x, v.y, v.z, cos(angle/2.));
-	return quat.norm();
-}
-
-Vec3 quat_to_euler(Vec4 q) {
-	float sqw = q.w*q.w;
-	float sqx = q.x*q.x;
-	float sqy = q.y*q.y;
-	float sqz = q.z*q.z;
-	float unit = sqx + sqy + sqz + sqw;
-	float test = q.x*q.y + q.z*q.w;
-	if(test > 0.499*unit)
-		return Vec3(0, todeg(2 * atan2(q.x,q.w)), todeg(M_PI/2));
-	if(test < -0.499*unit)
-		return Vec3(0, todeg(-2 * atan2(q.x,q.w)), todeg(M_PI/2));
-	return Vec3(
-		todeg( atan2(2*q.x*q.w-2*q.y*q.z , -sqx + sqy - sqz + sqw) ),
-		todeg( atan2(2*q.y*q.w-2*q.x*q.z , sqx - sqy - sqz + sqw) ),
-		todeg( asin(2*test/unit) )
+Vec4 quat_quat(Vec4 a, Vec4 b) {
+	return Vec4(
+		 a.x * b.w + a.y * b.z - a.z * b.y + a.w * b.x,
+		-a.x * b.z + a.y * b.w + a.z * b.x + a.w * b.y,
+		 a.x * b.y - a.y * b.x + a.z * b.w + a.w * b.z,
+		-a.x * b.x - a.y * b.y - a.z * b.z + a.w * b.w
 	);
 }
 
+Vec4 euler_to_quat(Vec3 angles) {
+	f64 c1 = cos(angles.y / 2.);
+	f64 c2 = cos(angles.z / 2.);
+	f64 c3 = cos(angles.x / 2.);
+	f64 s1 = sin(angles.y / 2.);
+	f64 s2 = sin(angles.z / 2.);
+	f64 s3 = sin(angles.x / 2.);
+
+	Vec4 q;
+	q.w = c1 * c2 * c3 - s1 * s2 * s3;
+	q.x = s1 * s2 * c3 + c1 * c2 * s3;
+	q.y = s1 * c2 * c3 + c1 * s2 * s3;
+	q.z = c1 * s2 * c3 - s1 * c2 * s3;
+	return q;
+}
+
+Vec3 quat_to_euler(Vec4 q) {
+	Vec3 e;
+	q = q.norm();
+
+	f64 test = q.x * q.y + q.z * q.w;
+	if(test > .4995) {		// north pole singularity
+		e.y = 2 * atan2(q.x, q.w);
+		e.z = M_PI / 2.;
+		e.x = 0;
+		return e;
+	}
+
+	if(test < -.4995) {		// south pole singularity
+		e.y = -2. * atan2(q.x, q.w);
+		e.z = -M_PI / 2.;
+		e.x = 0;
+	}
+
+	f64 sqx = q.x * q.x;
+	f64 sqy = q.y * q.y;
+	f64 sqz = q.z * q.z;
+
+	e.y = atan2(2*q.y*q.w-2*q.x*q.z , 1 - 2*sqy - 2*sqz);
+	e.z = asin(2*test);
+	e.x = atan2(2*q.x*q.w-2*q.y*q.z , 1 - 2*sqx - 2*sqz);
+	return e;
+}
+
 Mat4 quat_to_mat4(Vec4 q) {
-	float xx = q.x * q.x;
-	float xy = q.x * q.y;
-	float xz = q.x * q.z;
-	float xw = q.x * q.w;
-	float yy = q.y * q.y;
-	float yz = q.y * q.z;
-	float yw = q.y * q.w;
-	float zz = q.z * q.z;
-	float zw = q.z * q.w;
-	
-	Mat4 r;
-	r.data[0][0] = 1.0 - 2.0*yy - 2.0*zz;
-	r.data[0][1] = 2.0 * xy - 2.0 * zw;
-	r.data[0][2] = 2.0 * xz + 2.0 * yw;
-	r.data[1][0] = 2.0 * xy + 2.0 * zw;
-	r.data[1][1] = 1.0 - 2.0*xx - 2.0*zz;
-	r.data[1][2] = 2.0 * yz - 2.0 * xw;
-	r.data[2][0] = 2.0 * xz - 2.0 * yw;
-	r.data[2][1] = 2.0 * yz + 2.0 * xw;
-	r.data[2][2] = 1.0 - 2.0*xx - 2.0*yy;
-	return r;
+	f64 sqx = q.x*q.x;
+	f64 sqy = q.y*q.y;
+	f64 sqz = q.z*q.z;
+
+	Mat4 m;
+	m.data[0][0] = 1 - 2*sqy - 2*sqz;
+	m.data[1][0] = 2*q.x*q.y + 2*q.z*q.w;
+	m.data[2][0] = 2*q.x*q.z - 2*q.y*q.w;
+
+	m.data[0][1] = 2*q.x*q.y - 2*q.z*q.w;
+	m.data[1][1] = 1-2*sqx-2*sqz;
+	m.data[2][1] = 2*q.y*q.z + 2*q.x*q.w;
+
+	m.data[0][2] = 2*q.x*q.z + 2*q.y*q.w;
+	m.data[1][2] = 2*q.y*q.z - 2*q.x*q.w;
+	m.data[2][2] = 1 - 2*sqx - 2*sqy;
+
+	return m;
 }
