@@ -11,6 +11,7 @@ enum NodeType {
 
 class Node {
 	protected:
+	u64 id;
 	Vec3 pos, size;
 	Vec4 rot;
 	Mat4 local, global;
@@ -33,6 +34,7 @@ class Node {
 	Node* get_child(u32 idx);
 	u32 get_child_count();
 	NodeType get_type();
+	u64 get_id();
 	void set_pos(Vec3 p);
 	void set_scale(Vec3 s);
 	void set_rot(Vec4 q);

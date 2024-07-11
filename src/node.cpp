@@ -1,8 +1,10 @@
 #include "common.h"
 
 std::queue<Node*> free_queue;
+u64 node_id_counter;
 
 Node::Node() {
+	id		= ++node_id_counter;
 	type	= NodeType::TYPE_NODE;
 	name	= "Node";
 	pos		= Vec3(0,0,0);
@@ -32,6 +34,7 @@ Mat4 Node::get_global()			{ return global; }
 Node* Node::get_child(u32 idx)	{ return children.at(idx); }
 u32 Node::get_child_count()		{ return children.size(); }
 NodeType Node::get_type()		{ return type; }
+u64 Node::get_id()				{ return id; }
 
 void Node::set_pos(Vec3 p) {
 	pos = p;

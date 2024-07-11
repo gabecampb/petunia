@@ -68,6 +68,9 @@ void __tree_traverse(Node* n) {
 void editor_ui() {
 	ImGui::Begin("Node Editor", &editor_open);
 
+	ImGui::Text("Scene Tree");
+	__tree_traverse(cur_scene->root);
+
 	if(tree_sel_node) {
 		ImGui::Text("Selected: %s (%d)", tree_sel_node->name.c_str(), tree_sel_node->get_id());
 		transform_buttons(tree_sel_node);
@@ -76,9 +79,6 @@ void editor_ui() {
 	ImGui::SliderFloat("Translate", &trans_amt, .1, 1);
 	ImGui::SliderFloat("Rotate", &rot_amt, .1, 90);
 	ImGui::SliderFloat("Scale", &scale_amt, .1, 1);
-
-	ImGui::Text("Scene Tree");
-	__tree_traverse(cur_scene->root);
 
 	ImGui::End();
 }
