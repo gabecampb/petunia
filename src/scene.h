@@ -1,24 +1,22 @@
+#ifndef SCENE_H
+#define SCENE_H
+
 #include "common.h"
 
 class Scene {
+	private:
+	std::vector<Model*> loaded_models;
+	u32 n_loaded_models = 0;
+
 	public:
 	Node* root;
-	std::vector<Model*> loaded_models;
 
-	Scene() {
-		// default scene constructor
-		root = new Node;
-		root->name = "root";
-	}
-
-	Model* load_model(u32 id, std::string fpath, std::string tex_fpath) {
-		Model* m = new Model;
-		m->model_id = id;
-		if(tex_fpath == "")
-			m->load(fpath);
-		else
-			m->load_textured(fpath, tex_fpath);
-		loaded_models.push_back(m);
-		return m;
-	}
+	Scene();
+	void set_loaded_model(u32 id, Model* m);
+	Model* get_loaded_model(u32 id);
+	u32 get_num_loaded_models();
+	Model* load_model(u32 id, std::string mesh_fpath);
+	Model* load_model(u32 id, std::string mesh_fpath, std::string tex_fpath);
 };
+
+#endif

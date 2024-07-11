@@ -3,9 +3,53 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
 
+f32* load_vbo_from_file(std::string file, u32& size);
+GLuint load_texture_from_file(std::string file);
+
 Model::Model() {
 	model_id = vao = vbo = ibo = tbo = n_verts = 0;
-	filepath = tex_filepath = "";
+	mesh_filepath = tex_filepath = "";
+}
+
+Model::Model(std::string mesh_fpath) {
+	*this = Model();
+	load_mesh(mesh_fpath);
+}
+
+Model::Model(std::string mesh_fpath, std::string tex_fpath) {
+	*this = Model(mesh_fpath);
+	load_texture(tex_fpath);
+}
+
+// load the VBO and IBO; discards previous data
+void Model::load_mesh(std::string mesh_fpath) {
+	u32 stride = 32;
+	u32 s;
+	f32* data = load_vbo_from_file(mesh_fpath, s);
+
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glBufferData(GL_ARRAY_BUFFER, s, data, GL_STATIC_DRAW);
+	free(data);
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,stride,0);
+	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,stride,(void*)12);
+	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,stride,(void*)24);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+
+	mesh_filepath = mesh_fpath;
+	n_verts = s / (8 * sizeof(f32));
+}
+
+void Model::load_texture(std::string tex_fpath) {
+	tbo = load_texture_from_file(tex_fpath);
+	if(tbo)
+		tex_filepath = tex_fpath;
 }
 
 // returns a V3 N3 T2 array describing vertices of model in a file, via assimp.
@@ -92,36 +136,4 @@ GLuint load_texture_from_file(std::string file) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 	stbi_image_free(image);
 	return tbo_id;
-}
-
-// load the VBO and IBO; discards previous data
-void Model::load(std::string fpath) {
-	u32 stride = 32;
-	u32 s;
-	f32* data = load_vbo_from_file(fpath, s);
-
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, s, data, GL_STATIC_DRAW);
-	free(data);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,stride,0);
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,stride,(void*)12);
-	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,stride,(void*)24);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-
-	filepath = fpath;
-	n_verts = s / (8 * sizeof(f32));
-}
-
-void Model::load_textured(std::string fpath, std::string tex_fpath) {
-	load(fpath);
-	tbo = load_texture_from_file(tex_fpath);
-	if(tbo)
-		tex_filepath = tex_fpath;
 }
