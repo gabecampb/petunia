@@ -3,8 +3,11 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../include/stb_image.h"
 
-f32* load_vbo_from_file(std::string file, u32& size);
+f32* load_vdata_from_file(std::string file, u32& size);
 GLuint load_texture_from_file(std::string file);
+GLuint load_vbo_from_vdata(f32* data, u32 size);
+extern f32 box[];
+extern f32 line[];
 
 Model::Model() {
 	model_id = vao = vbo = ibo = tbo = n_verts = 0;
@@ -21,16 +24,12 @@ Model::Model(std::string mesh_fpath, std::string tex_fpath) {
 	load_texture(tex_fpath);
 }
 
-// load the VBO and IBO; discards previous data
-void Model::load_mesh(std::string mesh_fpath) {
-	u32 stride = 32;
-	u32 s;
-	f32* data = load_vbo_from_file(mesh_fpath, s);
+void Model::load_vbo_from_vdata(f32* data, u32 size) {
+	const u32 stride = 32;
 
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, s, data, GL_STATIC_DRAW);
-	free(data);
+	glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -42,8 +41,17 @@ void Model::load_mesh(std::string mesh_fpath) {
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
+	n_verts = size / (8 * sizeof(f32));
+}
+
+// load the VBO and IBO; discards previous data
+void Model::load_mesh(std::string mesh_fpath) {
+	u32 s;
+	f32* data = load_vdata_from_file(mesh_fpath, s);
+	load_vbo_from_vdata(data, s);
+	free(data);
+
 	mesh_filepath = mesh_fpath;
-	n_verts = s / (8 * sizeof(f32));
 }
 
 void Model::load_texture(std::string tex_fpath) {
@@ -52,9 +60,19 @@ void Model::load_texture(std::string tex_fpath) {
 		tex_filepath = tex_fpath;
 }
 
+void Model::load_box() {
+	u32 size = sizeof(f32) * 72 * 8;
+	load_vbo_from_vdata(box, size);
+}
+
+void Model::load_line() {
+	u32 size = sizeof(f32) * 2 * 8;
+	load_vbo_from_vdata(line, size);
+}
+
 // returns a V3 N3 T2 array describing vertices of model in a file, via assimp.
 // Triangulates. Returns size of array in bytes.
-f32* load_vbo_from_file(std::string file, u32& size) {
+f32* load_vdata_from_file(std::string file, u32& size) {
 	Assimp::Importer importer;
 	
 	const aiScene* scene = importer.ReadFile(file.c_str(),
@@ -137,3 +155,83 @@ GLuint load_texture_from_file(std::string file) {
 	stbi_image_free(image);
 	return tbo_id;
 }
+
+f32 box[] = {
+	1, 1, -1, -0, 1, -0, 0.625, 0.5,
+	-1, 1, -1, -0, 1, -0, 0.875, 0.5,
+	-1, 1, 1, -0, 1, -0, 0.875, 0.75,
+	1, 1, -1, -0, 1, -0, 0.625, 0.5,
+	-1, 1, 1, -0, 1, -0, 0.875, 0.75,
+	1, 1, 1, -0, 1, -0, 0.625, 0.75,
+	1, -1, 1, -0, -0, 1, 0.375, 0.75,
+	1, 1, 1, -0, -0, 1, 0.625, 0.75,
+	-1, 1, 1, -0, -0, 1, 0.625, 1,
+	1, -1, 1, -0, -0, 1, 0.375, 0.75,
+	-1, 1, 1, -0, -0, 1, 0.625, 1,
+	-1, -1, 1, -0, -0, 1, 0.375, 1,
+	-1, -1, 1, -1, -0, -0, 0.375, 0,
+	-1, 1, 1, -1, -0, -0, 0.625, 0,
+	-1, 1, -1, -1, -0, -0, 0.625, 0.25,
+	-1, -1, 1, -1, -0, -0, 0.375, 0,
+	-1, 1, -1, -1, -0, -0, 0.625, 0.25,
+	-1, -1, -1, -1, -0, -0, 0.375, 0.25,
+	-1, -1, -1, -0, -1, -0, 0.125, 0.5,
+	1, -1, -1, -0, -1, -0, 0.375, 0.5,
+	1, -1, 1, -0, -1, -0, 0.375, 0.75,
+	-1, -1, -1, -0, -1, -0, 0.125, 0.5,
+	1, -1, 1, -0, -1, -0, 0.375, 0.75,
+	-1, -1, 1, -0, -1, -0, 0.125, 0.75,
+	1, -1, -1, 1, -0, -0, 0.375, 0.5,
+	1, 1, -1, 1, -0, -0, 0.625, 0.5,
+	1, 1, 1, 1, -0, -0, 0.625, 0.75,
+	1, -1, -1, 1, -0, -0, 0.375, 0.5,
+	1, 1, 1, 1, -0, -0, 0.625, 0.75,
+	1, -1, 1, 1, -0, -0, 0.375, 0.75,
+	-1, -1, -1, -0, -0, -1, 0.375, 0.25,
+	-1, 1, -1, -0, -0, -1, 0.625, 0.25,
+	1, 1, -1, -0, -0, -1, 0.625, 0.5,
+	-1, -1, -1, -0, -0, -1, 0.375, 0.25,
+	1, 1, -1, -0, -0, -1, 0.625, 0.5,
+	1, -1, -1, -0, -0, -1, 0.375, 0.5,
+	1, 1, -1, -0, 1, -0, 0, 0,
+	-1, 1, -1, -0, 1, -0, 1, 0,
+	-1, 1, 1, -0, 1, -0, 1, 1,
+	1, 1, -1, -0, 1, -0, 0, 0,
+	-1, 1, 1, -0, 1, -0, 1, 1,
+	1, 1, 1, -0, 1, -0, 0, 1,
+	1, -1, 1, -0, -0, 1, 0, 0,
+	1, 1, 1, -0, -0, 1, 1, 0,
+	-1, 1, 1, -0, -0, 1, 1, 1,
+	1, -1, 1, -0, -0, 1, 0, 0,
+	-1, 1, 1, -0, -0, 1, 1, 1,
+	-1, -1, 1, -0, -0, 1, 0, 1,
+	-1, -1, 1, -1, -0, -0, 0, 0,
+	-1, 1, 1, -1, -0, -0, 1, 0,
+	-1, 1, -1, -1, -0, -0, 1, 1,
+	-1, -1, 1, -1, -0, -0, 0, 0,
+	-1, 1, -1, -1, -0, -0, 1, 1,
+	-1, -1, -1, -1, -0, -0, 0, 1,
+	-1, -1, -1, -0, -1, -0, 0, 0,
+	1, -1, -1, -0, -1, -0, 1, 0,
+	1, -1, 1, -0, -1, -0, 1, 1,
+	-1, -1, -1, -0, -1, -0, 0, 0,
+	1, -1, 1, -0, -1, -0, 1, 1,
+	-1, -1, 1, -0, -1, -0, 0, 1,
+	1, -1, -1, 1, -0, -0, 0, 0,
+	1, 1, -1, 1, -0, -0, 1, 0,
+	1, 1, 1, 1, -0, -0, 1, 1,
+	1, -1, -1, 1, -0, -0, 0, 0,
+	1, 1, 1, 1, -0, -0, 1, 1,
+	1, -1, 1, 1, -0, -0, 0, 1,
+	-1, -1, -1, -0, -0, -1, 0, 0,
+	-1, 1, -1, -0, -0, -1, 1, 0,
+	1, 1, -1, -0, -0, -1, 1, 1,
+	-1, -1, -1, -0, -0, -1, 0, 0,
+	1, 1, -1, -0, -0, -1, 1, 1,
+	1, -1, -1, -0, -0, -1, 0, 1
+};
+
+f32 line[] = {
+	0, 0, 0, 0, -1, 0, 0, 0,
+	0, 1, 0, 0,  1, 0, 0, 0,
+};
